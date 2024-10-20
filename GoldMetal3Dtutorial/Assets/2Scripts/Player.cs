@@ -44,6 +44,7 @@ public class Player : MonoBehaviour
     bool isFireReady = true;
     bool isBorder;
     bool isDamage;
+    bool isShop;
 
     Vector3 moveVec;
     Vector3 dodgeVec;
@@ -58,11 +59,14 @@ public class Player : MonoBehaviour
     float fireDelay;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
         meshs = GetComponentsInChildren<MeshRenderer>();
+
+        Debug.Log(PlayerPrefs.GetInt("MaxScore"));
+        //PlayerPrefs.SetInt("MaxScore", 112500);
     }
 
     // Update is called once per frame
@@ -169,7 +173,7 @@ public class Player : MonoBehaviour
         fireDelay += Time.deltaTime;
         isFireReady = equipWeapon.rate < fireDelay;
 
-        if(fDown && isFireReady && !isDodge && !isSwap){
+        if(fDown && isFireReady && !isDodge && !isSwap && !isShop){
             equipWeapon.Use();
             anim.SetTrigger(equipWeapon.type == Weapon.Type.Melee ? "doSwing" : "doShot");
             fireDelay = 0;
@@ -184,7 +188,8 @@ public class Player : MonoBehaviour
             return;
         if(ammo == 0)
             return;
-        if(rDown && !isJump && !isDodge && !isSwap && isFireReady){
+        if(rDown && !isJump && !isDodge && !isSwap && isFireReady && !isShop)
+        {
              anim.SetTrigger("doReload");
              isReload = true;
 
@@ -269,6 +274,7 @@ public class Player : MonoBehaviour
             else if(nearObject.tag == "Shop"){
                 Shop shop = nearObject.GetComponent<Shop>();
                 shop.Enter(this);
+                isShop = true;
             }
         }
     }
@@ -374,6 +380,7 @@ public class Player : MonoBehaviour
         else if(other.tag == "Shop"){
             Shop shop = nearObject.GetComponent<Shop>();
             shop.Exit();
+            isShop = false;
             nearObject = null;
         }
     }

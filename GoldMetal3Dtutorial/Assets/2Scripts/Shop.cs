@@ -32,9 +32,15 @@ public class Shop : MonoBehaviour
     {
         int price = itemPrice[index];
         if(price > enterPlayer.coin){
+            StopCoroutine(Talk());
+            StartCoroutine(Talk());
             return;
         }
 
+        enterPlayer.coin -= price;
+        Vector3 ranVec = Vector3.right * Random.Range(-3, 3)
+            + Vector3.forward * Random.Range(-3, 3);
+        Instantiate(itmeObject[index], itemPos[index].position + ranVec, itemPos[index].rotation);
     }
 
     IEnumerator Talk()
